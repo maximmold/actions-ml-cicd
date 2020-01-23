@@ -1,0 +1,17 @@
+name: Test Kubectl
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Run a one-line script
+      run: echo Hello, world! 
+    - uses: danielr1996/kubectl-action@1.0.0
+      name: Test
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        args: get po -A
