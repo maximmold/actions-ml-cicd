@@ -14,4 +14,4 @@ jobs:
       name: Test
       with:
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
-        args: get po
+        args: get po -A
