@@ -44,9 +44,9 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --in-path
-      - '{{inputs.parameters.raw-text-path}}"
+      - "{{inputs.parameters.raw-text-path}}"
       - --out-path
-      - '{{inputs.parameters.clean-text-path}}"
+      - "{{inputs.parameters.clean-text-path}}"
       command:
       - python
       image: maximmold/clean_text_transformer:0.1
@@ -130,7 +130,7 @@ spec:
           - name: clean-text-path
             value: "{{inputs.parameters.clean-text-path}}"
           - name: my-pvc-name
-            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
           - name: raw-text-path
             value: "{{inputs.parameters.raw-text-path}}"
         dependencies:
@@ -151,7 +151,7 @@ spec:
           - name: labels-path
             value: "{{inputs.parameters.labels-path}}"
           - name: my-pvc-name
-            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
           - name: raw-text-path
             value: "{{inputs.parameters.raw-text-path}}"
         dependencies:
@@ -171,7 +171,7 @@ spec:
           - name: lr-prediction-path
             value: "{{inputs.parameters.lr-prediction-path}}"
           - name: my-pvc-name
-            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
           - name: tfidf-vectors-path
             value: "{{inputs.parameters.tfidf-vectors-path}}"
         dependencies:
@@ -188,7 +188,7 @@ spec:
           - name: clean-text-path
             value: "{{inputs.parameters.clean-text-path}}"
           - name: my-pvc-name
-            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
           - name: spacy-tokens-path
             value: "{{inputs.parameters.spacy-tokens-path}}"
         dependencies:
@@ -199,7 +199,7 @@ spec:
       - arguments:
           parameters:
           - name: my-pvc-name
-            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
           - name: spacy-tokens-path
             value: "{{inputs.parameters.spacy-tokens-path}}"
           - name: tfidf-max-features
