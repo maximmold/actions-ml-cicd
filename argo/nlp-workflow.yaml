@@ -106,6 +106,20 @@ spec:
       - name: mlpipeline-metrics
         optional: true
         path: /mlpipeline-metrics.json
+  - name: deletepreviousseldon
+    outputs:
+      parameters:
+      - name: deletepreviousseldon-manifest
+        valueFrom:
+          jsonPath: '{}'
+      - name: deletepreviousseldon-name
+        valueFrom:
+          jsonPath: '{.metadata.name}'
+    resource:
+      action: delete
+      manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
+        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github_branch}}'\n\
+        \  namespace: kubeflow\n"
   - name: my-pvc
     outputs:
       parameters:
@@ -158,6 +172,10 @@ spec:
         - my-pvc
         name: data-downloader
         template: data-downloader
+      - dependencies:
+        - predictor
+        name: deletepreviousseldon
+        template: deletepreviousseldon
       - name: my-pvc
         template: my-pvc
       - arguments:
@@ -180,7 +198,7 @@ spec:
         name: predictor
         template: predictor
       - dependencies:
-        - predictor
+        - deletepreviousseldon
         name: seldondeploy
         template: seldondeploy
       - arguments:
@@ -283,30 +301,30 @@ spec:
     resource:
       action: create
       manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
-        metadata:\n  labels:\n    app: seldon\n  name: seldon-deployment-{{workflow.name}}\n\
-        \  namespace: kubeflow\nspec:\n  annotations:\n    deployment_version: v1\n\
-        \    project_name: NLP Pipeline\n  name: seldon-deployment-{{workflow.name}}\n\
-        \  oauth_key: oauth-key\n  oauth_secret: oauth-secret\n  predictors:\n  -\
-        \ annotations:\n      predictor_version: v1\n    componentSpecs:\n    - spec:\n\
-        \        containers:\n        - image: maximmold/clean_text_transformer:0.1\n\
-        \          imagePullPolicy: IfNotPresent\n          name: cleantext\n    \
-        \      resources:\n            requests:\n              memory: 1Mi\n    \
-        \    - image: maximmold/spacy_tokenizer:0.1\n          imagePullPolicy: IfNotPresent\n\
-        \          name: spacytokenizer\n        - image: maximmold/tfidf_vectorizer:0.1\n\
-        \          imagePullPolicy: IfNotPresent\n          name: tfidfvectorizer\n\
-        \          volumeMounts:\n          - mountPath: /mnt\n            name: mypvc\n\
-        \        - image: maximmold/lr_text_classifier:0.1\n          imagePullPolicy:\
-        \ IfNotPresent\n          name: lrclassifier\n          volumeMounts:\n  \
-        \        - mountPath: /mnt\n            name: mypvc\n        terminationGracePeriodSeconds:\
-        \ 20\n        volumes:\n        - name: mypvc\n          persistentVolumeClaim:\n\
-        \            claimName: '{{workflow.name}}-my-pvc'\n    graph:\n      children:\n\
-        \      - children:\n        - children:\n          - children: []\n      \
-        \      endpoint:\n              type: REST\n            name: lrclassifier\n\
-        \            type: MODEL\n          endpoint:\n            type: REST\n  \
-        \        name: tfidfvectorizer\n          type: MODEL\n        endpoint:\n\
-        \          type: REST\n        name: spacytokenizer\n        type: MODEL\n\
-        \      endpoint:\n        type: REST\n      name: cleantext\n      type: MODEL\n\
-        \    name: single-model\n    replicas: 1\n"
+        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github_branch}}'\n\
+        \  name: seldon-deployment-{{workflow.name}}\n  namespace: kubeflow\nspec:\n\
+        \  annotations:\n    deployment_version: v1\n    project_name: NLP Pipeline\n\
+        \  name: seldon-deployment-{{workflow.name}}\n  oauth_key: oauth-key\n  oauth_secret:\
+        \ oauth-secret\n  predictors:\n  - annotations:\n      predictor_version:\
+        \ v1\n    componentSpecs:\n    - spec:\n        containers:\n        - image:\
+        \ maximmold/clean_text_transformer:0.1\n          imagePullPolicy: IfNotPresent\n\
+        \          name: cleantext\n          resources:\n            requests:\n\
+        \              memory: 1Mi\n        - image: maximmold/spacy_tokenizer:0.1\n\
+        \          imagePullPolicy: IfNotPresent\n          name: spacytokenizer\n\
+        \        - image: maximmold/tfidf_vectorizer:0.1\n          imagePullPolicy:\
+        \ IfNotPresent\n          name: tfidfvectorizer\n          volumeMounts:\n\
+        \          - mountPath: /mnt\n            name: mypvc\n        - image: maximmold/lr_text_classifier:0.1\n\
+        \          imagePullPolicy: IfNotPresent\n          name: lrclassifier\n \
+        \         volumeMounts:\n          - mountPath: /mnt\n            name: mypvc\n\
+        \        terminationGracePeriodSeconds: 20\n        volumes:\n        - name:\
+        \ mypvc\n          persistentVolumeClaim:\n            claimName: '{{workflow.name}}-my-pvc'\n\
+        \    graph:\n      children:\n      - children:\n        - children:\n   \
+        \       - children: []\n            endpoint:\n              type: REST\n\
+        \            name: lrclassifier\n            type: MODEL\n          endpoint:\n\
+        \            type: REST\n          name: tfidfvectorizer\n          type:\
+        \ MODEL\n        endpoint:\n          type: REST\n        name: spacytokenizer\n\
+        \        type: MODEL\n      endpoint:\n        type: REST\n      name: cleantext\n\
+        \      type: MODEL\n    name: single-model\n    replicas: 1\n"
   - container:
       args:
       - /microservice/pipeline_step.py
