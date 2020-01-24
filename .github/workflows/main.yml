@@ -21,7 +21,7 @@ jobs:
         KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
     - name: Step Three - Submit Argo Workflow from the examples/ folder in this repo
       id: argo
-      uses: machine-learning-apps/actions-argo@master
+      uses: maximmold/actions-argo@master
       with:
         argo_url: "localhost:8082"
         # below is a reference to a YAML file in this repo that defines the workflow.
