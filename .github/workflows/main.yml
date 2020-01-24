@@ -10,11 +10,6 @@ jobs:
     steps:
     - name: Copy Repository Contents
       uses: actions/checkout@master
-#    - uses: danielr1996/kubectl-action@1.0.0
-#      name: Test
-#      with:
-#        kubeconfig: ${{ secrets.KUBE_CONFIG }}
-#        args: apply -f argo/nlp-workflow.yaml
     - run: 'echo "$KUBE_CONFIG" > ./.kube_config'
       shell: bash
       env:
