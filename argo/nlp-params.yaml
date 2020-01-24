@@ -13,4 +13,3 @@ tfidf-max-features: "10000"
 tfidf-model-path: /mnt/tfidf.model
 tfidf-ngram-range: "3"
 tfidf-vectors-path: /mnt/tfidf.data
-github-branch: test

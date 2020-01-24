@@ -37,6 +37,8 @@ spec:
       value: '3'
     - name: batch-size
       value: '100'
+    - name: github-branch
+      value: master
   entrypoint: nlp
   serviceAccountName: pipeline-runner
   templates:
