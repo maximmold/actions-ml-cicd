@@ -27,6 +27,7 @@ jobs:
         # below is a reference to a YAML file in this repo that defines the workflow.
         workflow_yaml_path: "argo/nlp-workflow.yaml"
         parameter_file_path: "argo/nlp-params.yaml"
+        namespace: "kubeflow"
       env:
         # KUBECONFIG tells kubectl where it can find your authentication information.  A config file was saved to this path in Step Two.
         KUBECONFIG: './.kube_config'
