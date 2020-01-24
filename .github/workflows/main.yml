@@ -24,7 +24,6 @@ jobs:
       uses: maximmold/actions-argo@master
       with:
         argo_url: "localhost:8082"
-        # below is a reference to a YAML file in this repo that defines the workflow.
         workflow_yaml_path: "argo/nlp-workflow.yaml"
         parameter_file_path: "argo/nlp-params.yaml"
         namespace: "kubeflow"
