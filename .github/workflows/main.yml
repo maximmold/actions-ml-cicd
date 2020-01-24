@@ -28,5 +28,4 @@ jobs:
         parameter_file_path: "argo/nlp-params.yaml"
         namespace: "kubeflow"
       env:
-        # KUBECONFIG tells kubectl where it can find your authentication information.  A config file was saved to this path in Step Two.
         KUBECONFIG: './.kube_config'
