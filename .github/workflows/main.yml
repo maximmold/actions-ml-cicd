@@ -16,9 +16,9 @@ jobs:
 #        kubeconfig: ${{ secrets.KUBE_CONFIG }}
 #        args: apply -f argo/nlp-workflow.yaml
     - run: 'echo "$KUBE_CONFIG" > /github/workspace/.kube/config'
-        shell: bash
-        env:
-          KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
+      shell: bash
+      env:
+        KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
     - name: Step Three - Submit Argo Workflow from the examples/ folder in this repo
       id: argo
       uses: machine-learning-apps/actions-argo@master
