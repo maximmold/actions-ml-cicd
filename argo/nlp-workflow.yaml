@@ -118,7 +118,7 @@ spec:
     resource:
       action: delete
       manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
-        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github_branch}}'\n\
+        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github-branch}}'\n\
         \  namespace: kubeflow\n"
   - name: my-pvc
     outputs:
@@ -301,7 +301,7 @@ spec:
     resource:
       action: create
       manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
-        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github_branch}}'\n\
+        metadata:\n  labels:\n    app: seldon\n    branch: '{{inputs.parameters.github-branch}}'\n\
         \  name: seldon-deployment-{{workflow.name}}\n  namespace: kubeflow\nspec:\n\
         \  annotations:\n    deployment_version: v1\n    project_name: NLP Pipeline\n\
         \  name: seldon-deployment-{{workflow.name}}\n  oauth_key: oauth-key\n  oauth_secret:\
