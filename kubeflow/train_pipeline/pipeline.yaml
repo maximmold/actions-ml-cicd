@@ -119,9 +119,11 @@ spec:
           jsonPath: '{.metadata.name}'
     resource:
       action: delete
-      manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
-        metadata:\n  labels:\n    app: seldon\n    branch: '{{workflow.parameters.github-branch}}'\n\
-        \  namespace: kubeflow\n"
+      manifest: 'null
+
+        ...
+
+        '
   - name: my-pvc
     outputs:
       parameters:

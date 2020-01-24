@@ -19,7 +19,7 @@ jobs:
       uses: maximmold/actions-argo@master
       with:
         argo_url: "localhost:8083"
-        workflow_yaml_path: "argo/nlp-workflow.yaml"
+        workflow_yaml_path: "kubeflow/train_pipeline/pipeline.yaml"
         parameter_file_path: "argo/nlp-params.yaml"
         namespace: "kubeflow"
       env:

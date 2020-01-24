@@ -116,8 +116,7 @@ def nlp_pipeline(
 
     delete_previous_step = dsl.ResourceOp(
         name="deletepreviousseldon",
-        action="delete",
-        k8s_resource=seldon_delete_manifest)
+        action="delete")
 
     delete_previous_step.after(predict_step)
 
