@@ -1,5 +1,6 @@
 clean-text-path: /mnt/clean.data
 csv-encoding: ISO-8859-1
+csv-url: "https://raw.githubusercontent.com/axsauze/reddit-classification-exploration/master/data/reddit_train.csv"
 features-column: BODY
 labels-column: REMOVED
 labels-path: /mnt/labels.data
