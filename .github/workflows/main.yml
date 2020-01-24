@@ -22,6 +22,5 @@ jobs:
         workflow_yaml_path: "argo/nlp-workflow.yaml"
         parameter_file_path: "argo/nlp-params.yaml"
         namespace: "kubeflow"
-        github_branch: {{ github.ref }}
       env:
         KUBECONFIG: './.kube_config'
