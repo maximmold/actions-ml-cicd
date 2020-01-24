@@ -1,0 +1,8 @@
+---
+apiVersion: machinelearning.seldon.io/v1alpha2
+kind: SeldonDeployment
+metadata:
+  labels:
+    app: seldon
+    branch: "{{workflow.parameters.github-branch}}"
+  namespace: kubeflow
