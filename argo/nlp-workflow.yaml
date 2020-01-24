@@ -44,9 +44,9 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --in-path
-      - "{{inputs.parameters.raw-text-path}}"
+      - '{{inputs.parameters.raw-text-path}}'
       - --out-path
-      - "{{inputs.parameters.clean-text-path}}"
+      - '{{inputs.parameters.clean-text-path}}'
       command:
       - python
       image: maximmold/clean_text_transformer:0.1
@@ -71,17 +71,17 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --labels-path
-      - "{{inputs.parameters.labels-path}}"
+      - '{{inputs.parameters.labels-path}}'
       - --features-path
-      - "{{inputs.parameters.raw-text-path}}"
+      - '{{inputs.parameters.raw-text-path}}'
       - --csv-url
-      - "{{inputs.parameters.csv-url}}"
+      - '{{inputs.parameters.csv-url}}'
       - --csv-encoding
-      - "{{inputs.parameters.csv-encoding}}"
+      - '{{inputs.parameters.csv-encoding}}'
       - --features-column
-      - "{{inputs.parameters.features-column}}"
+      - '{{inputs.parameters.features-column}}'
       - --labels-column
-      - "{{inputs.parameters.labels-column}}"
+      - '{{inputs.parameters.labels-column}}'
       command:
       - python
       image: maximmold/data_downloader:0.1
@@ -128,11 +128,11 @@ spec:
       - arguments:
           parameters:
           - name: clean-text-path
-            value: "{{inputs.parameters.clean-text-path}}"
+            value: '{{inputs.parameters.clean-text-path}}'
           - name: my-pvc-name
-            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
           - name: raw-text-path
-            value: "{{inputs.parameters.raw-text-path}}"
+            value: '{{inputs.parameters.raw-text-path}}'
         dependencies:
         - data-downloader
         - my-pvc
@@ -141,19 +141,19 @@ spec:
       - arguments:
           parameters:
           - name: csv-encoding
-            value: "{{inputs.parameters.csv-encoding}}"
+            value: '{{inputs.parameters.csv-encoding}}'
           - name: csv-url
-            value: "{{inputs.parameters.csv-url}}"
+            value: '{{inputs.parameters.csv-url}}'
           - name: features-column
-            value: "{{inputs.parameters.features-column}}"
+            value: '{{inputs.parameters.features-column}}'
           - name: labels-column
-            value: "{{inputs.parameters.labels-column}}"
+            value: '{{inputs.parameters.labels-column}}'
           - name: labels-path
-            value: "{{inputs.parameters.labels-path}}"
+            value: '{{inputs.parameters.labels-path}}'
           - name: my-pvc-name
-            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
           - name: raw-text-path
-            value: "{{inputs.parameters.raw-text-path}}"
+            value: '{{inputs.parameters.raw-text-path}}'
         dependencies:
         - my-pvc
         name: data-downloader
@@ -163,17 +163,17 @@ spec:
       - arguments:
           parameters:
           - name: labels-path
-            value: "{{inputs.parameters.labels-path}}"
+            value: '{{inputs.parameters.labels-path}}'
           - name: lr-c-param
-            value: "{{inputs.parameters.lr-c-param}}"
+            value: '{{inputs.parameters.lr-c-param}}'
           - name: lr-model-path
-            value: "{{inputs.parameters.lr-model-path}}"
+            value: '{{inputs.parameters.lr-model-path}}'
           - name: lr-prediction-path
-            value: "{{inputs.parameters.lr-prediction-path}}"
+            value: '{{inputs.parameters.lr-prediction-path}}'
           - name: my-pvc-name
-            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
           - name: tfidf-vectors-path
-            value: "{{inputs.parameters.tfidf-vectors-path}}"
+            value: '{{inputs.parameters.tfidf-vectors-path}}'
         dependencies:
         - my-pvc
         - vectorize
@@ -186,11 +186,11 @@ spec:
       - arguments:
           parameters:
           - name: clean-text-path
-            value: "{{inputs.parameters.clean-text-path}}"
+            value: '{{inputs.parameters.clean-text-path}}'
           - name: my-pvc-name
-            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
           - name: spacy-tokens-path
-            value: "{{inputs.parameters.spacy-tokens-path}}"
+            value: '{{inputs.parameters.spacy-tokens-path}}'
         dependencies:
         - clean-text
         - my-pvc
@@ -199,17 +199,17 @@ spec:
       - arguments:
           parameters:
           - name: my-pvc-name
-            value: "{{tasks.my-pvc.outputs.parameters.my-pvc-name}}"
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
           - name: spacy-tokens-path
-            value: "{{inputs.parameters.spacy-tokens-path}}"
+            value: '{{inputs.parameters.spacy-tokens-path}}'
           - name: tfidf-max-features
-            value: "{{inputs.parameters.tfidf-max-features}}"
+            value: '{{inputs.parameters.tfidf-max-features}}'
           - name: tfidf-model-path
-            value: "{{inputs.parameters.tfidf-model-path}}"
+            value: '{{inputs.parameters.tfidf-model-path}}'
           - name: tfidf-ngram-range
-            value: "{{inputs.parameters.tfidf-ngram-range}}"
+            value: '{{inputs.parameters.tfidf-ngram-range}}'
           - name: tfidf-vectors-path
-            value: "{{inputs.parameters.tfidf-vectors-path}}"
+            value: '{{inputs.parameters.tfidf-vectors-path}}'
         dependencies:
         - my-pvc
         - tokenize
@@ -237,17 +237,17 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --in-path
-      - "{{inputs.parameters.tfidf-vectors-path}}"
+      - '{{inputs.parameters.tfidf-vectors-path}}'
       - --labels-path
-      - "{{inputs.parameters.labels-path}}"
+      - '{{inputs.parameters.labels-path}}'
       - --out-path
-      - "{{inputs.parameters.lr-prediction-path}}"
+      - '{{inputs.parameters.lr-prediction-path}}'
       - --c-param
-      - "{{inputs.parameters.lr-c-param}}"
+      - '{{inputs.parameters.lr-c-param}}'
       - --action
       - train
       - --model-path
-      - "{{inputs.parameters.lr-model-path}}"
+      - '{{inputs.parameters.lr-model-path}}'
       command:
       - python
       image: maximmold/lr_text_classifier:0.1
@@ -311,9 +311,9 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --in-path
-      - "{{inputs.parameters.clean-text-path}}"
+      - '{{inputs.parameters.clean-text-path}}'
       - --out-path
-      - "{{inputs.parameters.spacy-tokens-path}}"
+      - '{{inputs.parameters.spacy-tokens-path}}'
       command:
       - python
       image: maximmold/spacy_tokenizer:0.1
@@ -338,17 +338,17 @@ spec:
       args:
       - /microservice/pipeline_step.py
       - --in-path
-      - "{{inputs.parameters.spacy-tokens-path}}"
+      - '{{inputs.parameters.spacy-tokens-path}}'
       - --out-path
-      - "{{inputs.parameters.tfidf-vectors-path}}"
+      - '{{inputs.parameters.tfidf-vectors-path}}'
       - --max-features
-      - "{{inputs.parameters.tfidf-max-features}}"
+      - '{{inputs.parameters.tfidf-max-features}}'
       - --ngram-range
-      - "{{inputs.parameters.tfidf-ngram-range}}"
+      - '{{inputs.parameters.tfidf-ngram-range}}'
       - --action
       - train
       - --model-path
-      - "{{inputs.parameters.tfidf-model-path}}"
+      - '{{inputs.parameters.tfidf-model-path}}'
       command:
       - python
       image: maximmold/tfidf_vectorizer:0.1
@@ -375,4 +375,4 @@ spec:
   volumes:
   - name: my-pvc
     persistentVolumeClaim:
-      claimName: "{{inputs.parameters.my-pvc-name}}"
+      claimName: '{{inputs.parameters.my-pvc-name}}'
