@@ -15,7 +15,7 @@ jobs:
 #      with:
 #        kubeconfig: ${{ secrets.KUBE_CONFIG }}
 #        args: apply -f argo/nlp-workflow.yaml
-    - run: 'echo "$KUBE_CONFIG" > /github/workspace/.kube/config'
+    - run: 'echo "$KUBE_CONFIG" > /github/workspace/.kube_config'
       shell: bash
       env:
         KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
@@ -29,4 +29,4 @@ jobs:
         parameter_file_path: "argo/nlp-params.yaml"
       env:
         # KUBECONFIG tells kubectl where it can find your authentication information.  A config file was saved to this path in Step Two.
-        KUBECONFIG: '/github/workspace/.kube/config'
+        KUBECONFIG: '/github/workspace/.kube_config'
