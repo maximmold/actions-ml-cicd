@@ -109,6 +109,9 @@ spec:
         optional: true
         path: /mlpipeline-metrics.json
   - name: deletepreviousseldon
+    inputs:
+      parameters:
+      - name: github-branch
     outputs:
       parameters:
       - name: deletepreviousseldon-manifest
@@ -292,6 +295,9 @@ spec:
         optional: true
         path: /mlpipeline-metrics.json
   - name: seldondeploy
+    inputs:
+      parameters:
+      - name: github-branch
     outputs:
       parameters:
       - name: seldondeploy-manifest
