@@ -8,10 +8,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run a one-line script
-      run: echo Hello, world! 
-    - uses: danielr1996/kubectl-action@1.0.0
-      name: Test
+    - name: Copy Repository Contents
+      uses: actions/checkout@master
+#    - uses: danielr1996/kubectl-action@1.0.0
+#      name: Test
+#      with:
+#        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+#        args: apply -f argo/nlp-workflow.yaml
+    - run: 'echo "$KUBE_CONFIG" > /github/workspace/.kube/config'
+        shell: bash
+        env:
+          KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
+    - name: Step Three - Submit Argo Workflow from the examples/ folder in this repo
+      id: argo
+      uses: machine-learning-apps/actions-argo@master
       with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
-        args: get po -A
+        argo_url: "localhost:8082"
+        # below is a reference to a YAML file in this repo that defines the workflow.
+        workflow_yaml_path: "argo/nlp-workflow.yaml"
+        parameter_file_path: "argo/nlp-params.yaml"
+      env:
+        # KUBECONFIG tells kubectl where it can find your authentication information.  A config file was saved to this path in Step Two.
+        KUBECONFIG: '/github/workspace/.kube/config'

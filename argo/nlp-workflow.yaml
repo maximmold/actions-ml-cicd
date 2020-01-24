@@ -1,0 +1,378 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: nlp-
+spec:
+  arguments:
+    parameters:
+    - name: csv-url
+      value: https://raw.githubusercontent.com/axsauze/reddit-classification-exploration/master/data/reddit_train.csv
+    - name: csv-encoding
+      value: ISO-8859-1
+    - name: features-column
+      value: BODY
+    - name: labels-column
+      value: REMOVED
+    - name: raw-text-path
+      value: /mnt/text.data
+    - name: labels-path
+      value: /mnt/labels.data
+    - name: clean-text-path
+      value: /mnt/clean.data
+    - name: spacy-tokens-path
+      value: /mnt/tokens.data
+    - name: tfidf-vectors-path
+      value: /mnt/tfidf.data
+    - name: lr-prediction-path
+      value: /mnt/prediction.data
+    - name: tfidf-model-path
+      value: /mnt/tfidf.model
+    - name: lr-model-path
+      value: /mnt/lr.model
+    - name: lr-c-param
+      value: '0.1'
+    - name: tfidf-max-features
+      value: '10000'
+    - name: tfidf-ngram-range
+      value: '3'
+    - name: batch-size
+      value: '100'
+  entrypoint: nlp
+  serviceAccountName: pipeline-runner
+  templates:
+  - container:
+      args:
+      - /microservice/pipeline_step.py
+      - --in-path
+      - '{{inputs.parameters.raw-text-path}}'
+      - --out-path
+      - '{{inputs.parameters.clean-text-path}}'
+      command:
+      - python
+      image: maximmold/clean_text_transformer:0.1
+      volumeMounts:
+      - mountPath: /mnt
+        name: my-pvc
+    inputs:
+      parameters:
+      - name: clean-text-path
+      - name: my-pvc-name
+      - name: raw-text-path
+    name: clean-text
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+  - container:
+      args:
+      - /microservice/pipeline_step.py
+      - --labels-path
+      - '{{inputs.parameters.labels-path}}'
+      - --features-path
+      - '{{inputs.parameters.raw-text-path}}'
+      - --csv-url
+      - '{{inputs.parameters.csv-url}}'
+      - --csv-encoding
+      - '{{inputs.parameters.csv-encoding}}'
+      - --features-column
+      - '{{inputs.parameters.features-column}}'
+      - --labels-column
+      - '{{inputs.parameters.labels-column}}'
+      command:
+      - python
+      image: maximmold/data_downloader:0.1
+      volumeMounts:
+      - mountPath: /mnt
+        name: my-pvc
+    inputs:
+      parameters:
+      - name: csv-encoding
+      - name: csv-url
+      - name: features-column
+      - name: labels-column
+      - name: labels-path
+      - name: my-pvc-name
+      - name: raw-text-path
+    name: data-downloader
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+  - name: my-pvc
+    outputs:
+      parameters:
+      - name: my-pvc-manifest
+        valueFrom:
+          jsonPath: '{}'
+      - name: my-pvc-name
+        valueFrom:
+          jsonPath: '{.metadata.name}'
+      - name: my-pvc-size
+        valueFrom:
+          jsonPath: '{.status.capacity.storage}'
+    resource:
+      action: create
+      manifest: "apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: '{{workflow.name}}-my-pvc'\n\
+        spec:\n  accessModes:\n  - ReadWriteOnce\n  resources:\n    requests:\n  \
+        \    storage: 1Gi\n"
+  - dag:
+      tasks:
+      - arguments:
+          parameters:
+          - name: clean-text-path
+            value: '{{inputs.parameters.clean-text-path}}'
+          - name: my-pvc-name
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
+          - name: raw-text-path
+            value: '{{inputs.parameters.raw-text-path}}'
+        dependencies:
+        - data-downloader
+        - my-pvc
+        name: clean-text
+        template: clean-text
+      - arguments:
+          parameters:
+          - name: csv-encoding
+            value: '{{inputs.parameters.csv-encoding}}'
+          - name: csv-url
+            value: '{{inputs.parameters.csv-url}}'
+          - name: features-column
+            value: '{{inputs.parameters.features-column}}'
+          - name: labels-column
+            value: '{{inputs.parameters.labels-column}}'
+          - name: labels-path
+            value: '{{inputs.parameters.labels-path}}'
+          - name: my-pvc-name
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
+          - name: raw-text-path
+            value: '{{inputs.parameters.raw-text-path}}'
+        dependencies:
+        - my-pvc
+        name: data-downloader
+        template: data-downloader
+      - name: my-pvc
+        template: my-pvc
+      - arguments:
+          parameters:
+          - name: labels-path
+            value: '{{inputs.parameters.labels-path}}'
+          - name: lr-c-param
+            value: '{{inputs.parameters.lr-c-param}}'
+          - name: lr-model-path
+            value: '{{inputs.parameters.lr-model-path}}'
+          - name: lr-prediction-path
+            value: '{{inputs.parameters.lr-prediction-path}}'
+          - name: my-pvc-name
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
+          - name: tfidf-vectors-path
+            value: '{{inputs.parameters.tfidf-vectors-path}}'
+        dependencies:
+        - my-pvc
+        - vectorize
+        name: predictor
+        template: predictor
+      - dependencies:
+        - predictor
+        name: seldondeploy
+        template: seldondeploy
+      - arguments:
+          parameters:
+          - name: clean-text-path
+            value: '{{inputs.parameters.clean-text-path}}'
+          - name: my-pvc-name
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
+          - name: spacy-tokens-path
+            value: '{{inputs.parameters.spacy-tokens-path}}'
+        dependencies:
+        - clean-text
+        - my-pvc
+        name: tokenize
+        template: tokenize
+      - arguments:
+          parameters:
+          - name: my-pvc-name
+            value: '{{tasks.my-pvc.outputs.parameters.my-pvc-name}}'
+          - name: spacy-tokens-path
+            value: '{{inputs.parameters.spacy-tokens-path}}'
+          - name: tfidf-max-features
+            value: '{{inputs.parameters.tfidf-max-features}}'
+          - name: tfidf-model-path
+            value: '{{inputs.parameters.tfidf-model-path}}'
+          - name: tfidf-ngram-range
+            value: '{{inputs.parameters.tfidf-ngram-range}}'
+          - name: tfidf-vectors-path
+            value: '{{inputs.parameters.tfidf-vectors-path}}'
+        dependencies:
+        - my-pvc
+        - tokenize
+        name: vectorize
+        template: vectorize
+    inputs:
+      parameters:
+      - name: clean-text-path
+      - name: csv-encoding
+      - name: csv-url
+      - name: features-column
+      - name: labels-column
+      - name: labels-path
+      - name: lr-c-param
+      - name: lr-model-path
+      - name: lr-prediction-path
+      - name: raw-text-path
+      - name: spacy-tokens-path
+      - name: tfidf-max-features
+      - name: tfidf-model-path
+      - name: tfidf-ngram-range
+      - name: tfidf-vectors-path
+    name: nlp
+  - container:
+      args:
+      - /microservice/pipeline_step.py
+      - --in-path
+      - '{{inputs.parameters.tfidf-vectors-path}}'
+      - --labels-path
+      - '{{inputs.parameters.labels-path}}'
+      - --out-path
+      - '{{inputs.parameters.lr-prediction-path}}'
+      - --c-param
+      - '{{inputs.parameters.lr-c-param}}'
+      - --action
+      - train
+      - --model-path
+      - '{{inputs.parameters.lr-model-path}}'
+      command:
+      - python
+      image: maximmold/lr_text_classifier:0.1
+      volumeMounts:
+      - mountPath: /mnt
+        name: my-pvc
+    inputs:
+      parameters:
+      - name: labels-path
+      - name: lr-c-param
+      - name: lr-model-path
+      - name: lr-prediction-path
+      - name: my-pvc-name
+      - name: tfidf-vectors-path
+    name: predictor
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+  - name: seldondeploy
+    outputs:
+      parameters:
+      - name: seldondeploy-manifest
+        valueFrom:
+          jsonPath: '{}'
+      - name: seldondeploy-name
+        valueFrom:
+          jsonPath: '{.metadata.name}'
+    resource:
+      action: create
+      manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
+        metadata:\n  labels:\n    app: seldon\n  name: seldon-deployment-{{workflow.name}}\n\
+        \  namespace: kubeflow\nspec:\n  annotations:\n    deployment_version: v1\n\
+        \    project_name: NLP Pipeline\n  name: seldon-deployment-{{workflow.name}}\n\
+        \  oauth_key: oauth-key\n  oauth_secret: oauth-secret\n  predictors:\n  -\
+        \ annotations:\n      predictor_version: v1\n    componentSpecs:\n    - spec:\n\
+        \        containers:\n        - image: maximmold/clean_text_transformer:0.1\n\
+        \          imagePullPolicy: IfNotPresent\n          name: cleantext\n    \
+        \      resources:\n            requests:\n              memory: 1Mi\n    \
+        \    - image: maximmold/spacy_tokenizer:0.1\n          imagePullPolicy: IfNotPresent\n\
+        \          name: spacytokenizer\n        - image: maximmold/tfidf_vectorizer:0.1\n\
+        \          imagePullPolicy: IfNotPresent\n          name: tfidfvectorizer\n\
+        \          volumeMounts:\n          - mountPath: /mnt\n            name: mypvc\n\
+        \        - image: maximmold/lr_text_classifier:0.1\n          imagePullPolicy:\
+        \ IfNotPresent\n          name: lrclassifier\n          volumeMounts:\n  \
+        \        - mountPath: /mnt\n            name: mypvc\n        terminationGracePeriodSeconds:\
+        \ 20\n        volumes:\n        - name: mypvc\n          persistentVolumeClaim:\n\
+        \            claimName: '{{workflow.name}}-my-pvc'\n    graph:\n      children:\n\
+        \      - children:\n        - children:\n          - children: []\n      \
+        \      endpoint:\n              type: REST\n            name: lrclassifier\n\
+        \            type: MODEL\n          endpoint:\n            type: REST\n  \
+        \        name: tfidfvectorizer\n          type: MODEL\n        endpoint:\n\
+        \          type: REST\n        name: spacytokenizer\n        type: MODEL\n\
+        \      endpoint:\n        type: REST\n      name: cleantext\n      type: MODEL\n\
+        \    name: single-model\n    replicas: 1\n"
+  - container:
+      args:
+      - /microservice/pipeline_step.py
+      - --in-path
+      - '{{inputs.parameters.clean-text-path}}'
+      - --out-path
+      - '{{inputs.parameters.spacy-tokens-path}}'
+      command:
+      - python
+      image: maximmold/spacy_tokenizer:0.1
+      volumeMounts:
+      - mountPath: /mnt
+        name: my-pvc
+    inputs:
+      parameters:
+      - name: clean-text-path
+      - name: my-pvc-name
+      - name: spacy-tokens-path
+    name: tokenize
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+  - container:
+      args:
+      - /microservice/pipeline_step.py
+      - --in-path
+      - '{{inputs.parameters.spacy-tokens-path}}'
+      - --out-path
+      - '{{inputs.parameters.tfidf-vectors-path}}'
+      - --max-features
+      - '{{inputs.parameters.tfidf-max-features}}'
+      - --ngram-range
+      - '{{inputs.parameters.tfidf-ngram-range}}'
+      - --action
+      - train
+      - --model-path
+      - '{{inputs.parameters.tfidf-model-path}}'
+      command:
+      - python
+      image: maximmold/tfidf_vectorizer:0.1
+      volumeMounts:
+      - mountPath: /mnt
+        name: my-pvc
+    inputs:
+      parameters:
+      - name: my-pvc-name
+      - name: spacy-tokens-path
+      - name: tfidf-max-features
+      - name: tfidf-model-path
+      - name: tfidf-ngram-range
+      - name: tfidf-vectors-path
+    name: vectorize
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
+  volumes:
+  - name: my-pvc
+    persistentVolumeClaim:
+      claimName: '{{inputs.parameters.my-pvc-name}}'
