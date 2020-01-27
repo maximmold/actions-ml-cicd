@@ -109,21 +109,15 @@ spec:
         optional: true
         path: /mlpipeline-metrics.json
   - name: deletepreviousseldon
-    outputs:
-      parameters:
-      - name: deletepreviousseldon-manifest
-        valueFrom:
-          jsonPath: '{}'
-      - name: deletepreviousseldon-name
-        valueFrom:
-          jsonPath: '{.metadata.name}'
-    resource:
-      action: delete
-      manifest: 'null
-
-        ...
-
-        '
+    container:
+      args:
+      - delete
+      - seldondeployment
+      - -l
+      - 'github-branch={{workflow.parameters.github-branch}}'
+      command:
+      - kubectl
+      image: salathielgenese/k8s-101
   - name: my-pvc
     outputs:
       parameters:
