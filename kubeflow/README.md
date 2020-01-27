@@ -32,7 +32,7 @@ Make sure you install the following dependencies, as they are critical for this 
 
 Let's get started! 🚀🔥 We will be building the end-to-end pipeline below:
 
-![](img/kubeflow-seldon-nlp-full.jpg)
+![](img/kubeflow-seldon-nlp-full.jpg) 
 
 
 
