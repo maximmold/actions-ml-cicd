@@ -267,8 +267,8 @@ spec:
   - container:
       args:
       - 'patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}}
-        --field-selector metadata.name!={{workflow.name}}-my-pvc` -n kubeflow -p ''{"metadata":{"finalizers":
-        []}}'' --type=merge'
+        --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow` -n kubeflow
+        -p ''{"metadata":{"finalizers": []}}'' --type=merge'
       command:
       - kubectl
       image: bitnami/kubectl
