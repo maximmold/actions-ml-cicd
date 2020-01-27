@@ -187,6 +187,10 @@ spec:
         - seldondeploy
         name: deletepreviouspvc
         template: deletepreviouspvc
+      - dependencies:
+        - deletepreviouspvc
+        name: patchpvcfinalizer
+        template: patchpvcfinalizer
       - arguments:
           parameters:
           - name: create-pvc-name
@@ -260,6 +264,23 @@ spec:
       - name: tfidf-ngram-range
       - name: tfidf-vectors-path
     name: nlp
+  - container:
+      args:
+      - patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}}
+        --field-selector metadata.name!={{workflow.name}}-my-pvc`
+      - '-n kubeflow -p ''{"metadata":{"finalizers": []}}'' --type=merge'
+      command:
+      - kubectl
+      image: bitnami/kubectl
+    name: patchpvcfinalizer
+    outputs:
+      artifacts:
+      - name: mlpipeline-ui-metadata
+        optional: true
+        path: /mlpipeline-ui-metadata.json
+      - name: mlpipeline-metrics
+        optional: true
+        path: /mlpipeline-metrics.json
   - container:
       args:
       - /microservice/pipeline_step.py

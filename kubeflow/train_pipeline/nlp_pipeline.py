@@ -140,6 +140,7 @@ def nlp_pipeline(
         seldon_config = yaml.load(open("deploy_pipeline/seldon_production_pipeline.yaml"))
 
     deploy_step = dsl.ResourceOp(
+        action="apply",
         name="seldondeploy",
         k8s_resource=seldon_config,
         attribute_outputs={"name": "{.metadata.name}"})
@@ -161,6 +162,19 @@ def nlp_pipeline(
     )
 
     delete_previous_pvc.after(deploy_step)
+
+    patch_pvc_finalizer = dsl.ContainerOp(
+        name="patchpvcfinalizer",
+        image="bitnami/kubectl",
+        command="kubectl",
+        arguments=[
+            "patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc`",
+            "-n kubeflow -p '{\"metadata\":{\"finalizers\": []}}' --type=merge"
+        ]
+    )
+
+    patch_pvc_finalizer.after(delete_previous_pvc)
+
 
 if __name__ == '__main__':
   import kfp.compiler as compiler
