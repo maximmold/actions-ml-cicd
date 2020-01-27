@@ -36,7 +36,7 @@ def nlp_pipeline(
 
     pvc_metadata = V1ObjectMeta(
         name="{{workflow.name}}-my-pvc",
-        labels={"branch":'{{workflow.parameters.github-branch}}', "app": "nlp"}
+        labels={"branch":"{{workflow.parameters.github-branch}}", "app": "nlp"}
     )
     requested_resources = V1ResourceRequirements(
         requests={"storage": "1Gi"}
@@ -146,8 +146,8 @@ def nlp_pipeline(
     deploy_step.after(predict_step)
 
     delete_previous_pvc = dsl.ContainerOp(
-        name='deletepreviouspvc',
-        image='bitnami/kubectl',
+        name="deletepreviouspvc",
+        image="bitnami/kubectl",
         command="kubectl",
         arguments=[
             "delete",

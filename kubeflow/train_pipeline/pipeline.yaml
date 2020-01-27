@@ -6,7 +6,7 @@
   "annotations":
     "pipelines.kubeflow.org/pipeline_spec": |-
       {"description": "A pipeline demonstrating reproducible steps for NLP", "inputs": [{"default": "https://raw.githubusercontent.com/axsauze/reddit-classification-exploration/master/data/reddit_train.csv", "name": "csv_url", "optional": true}, {"default": "ISO-8859-1", "name": "csv_encoding", "optional": true}, {"default": "BODY", "name": "features_column", "optional": true}, {"default": "REMOVED", "name": "labels_column", "optional": true}, {"default": "/mnt/text.data", "name": "raw_text_path", "optional": true}, {"default": "/mnt/labels.data", "name": "labels_path", "optional": true}, {"default": "/mnt/clean.data", "name": "clean_text_path", "optional": true}, {"default": "/mnt/tokens.data", "name": "spacy_tokens_path", "optional": true}, {"default": "/mnt/tfidf.data", "name": "tfidf_vectors_path", "optional": true}, {"default": "/mnt/prediction.data", "name": "lr_prediction_path", "optional": true}, {"default": "/mnt/tfidf.model", "name": "tfidf_model_path", "optional": true}, {"default": "/mnt/lr.model", "name": "lr_model_path", "optional": true}, {"default": "0.1", "name": "lr_c_param", "optional": true}, {"default": "10000", "name": "tfidf_max_features", "optional": true}, {"default": "3", "name": "tfidf_ngram_range", "optional": true}, {"default": "100", "name": "batch_size", "optional": true}, {"default": "master", "name": "github_branch", "optional": true}], "name": "NLP"}
-  "generateName": nlp-
+  generateName: nlp-
 "spec":
   "arguments":
     "parameters":
