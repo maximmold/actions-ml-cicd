@@ -152,7 +152,9 @@ def nlp_pipeline(
         image="bitnami/kubectl",
         command="kubectl",
         arguments=[
-            "patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow` -n kubeflow -p '{\"metadata\":{\"finalizers\": []}}' --type=merge"
+            "--help; kubectl patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow` -n kubeflow -p",
+            "{'metadata':{'finalizers': []}}",
+            "--type=merge"
         ]
     )
 
