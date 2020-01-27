@@ -184,11 +184,11 @@ spec:
         name: data-downloader
         template: data-downloader
       - dependencies:
-        - seldondeploy
+        - patchpvcfinalizer
         name: deletepreviouspvc
         template: deletepreviouspvc
       - dependencies:
-        - deletepreviouspvc
+        - seldondeploy
         name: patchpvcfinalizer
         template: patchpvcfinalizer
       - arguments:
@@ -266,9 +266,9 @@ spec:
     name: nlp
   - container:
       args:
-      - patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}}
-        --field-selector metadata.name!={{workflow.name}}-my-pvc`
-      - '-n kubeflow -p ''{"metadata":{"finalizers": []}}'' --type=merge'
+      - 'patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}}
+        --field-selector metadata.name!={{workflow.name}}-my-pvc` -n kubeflow -p ''{"metadata":{"finalizers":
+        []}}'' --type=merge'
       command:
       - kubectl
       image: bitnami/kubectl
