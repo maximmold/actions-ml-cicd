@@ -2,6 +2,10 @@
 import kfp.dsl as dsl
 import yaml
 from kubernetes import client as k8s
+from kubernetes.client.models import (
+    V1ObjectMeta, V1ResourceRequirements, V1PersistentVolumeClaimSpec,
+    V1PersistentVolumeClaim
+)
 
 
 @dsl.pipeline(
@@ -29,12 +33,31 @@ def nlp_pipeline(
     """
     Pipeline 
     """
-    vop = dsl.VolumeOp(
-      name='my-pvc',
-      resource_name="my-pvc",
-      modes=["ReadWriteOnce"],
-      size="1Gi"
+
+    pvc_metadata = V1ObjectMeta(
+        name="{{workflow.name}}-my-pvc",
+        labels={"branch":'{{workflow.parameters.github-branch}}', "app": "nlp"}
     )
+    requested_resources = V1ResourceRequirements(
+        requests={"storage": "1Gi"}
+    )
+    pvc_spec = V1PersistentVolumeClaimSpec(
+        access_modes="ReadWriteOnce",
+        resources=requested_resources,
+        storage_class_name="default"
+    )
+    pvc = V1PersistentVolumeClaim(
+        api_version="v1",
+        kind="PersistentVolumeClaim",
+        metadata=pvc_metadata,
+        spec=pvc_spec
+    )
+
+    vop = dsl.VolumeOp(
+      name="create-pvc",
+      k8s_resource=pvc
+    )
+
 
     download_step = dsl.ContainerOp(
         name='data_downloader',
@@ -108,17 +131,6 @@ def nlp_pipeline(
         pvolumes={"/mnt": vectorize_step.pvolume}
     )
 
-    try:
-        seldon_delete_manifest = yaml.load(open("../deploy_pipeline/seldon_delete_manifest.yaml"))
-    except:
-        # If this file is run from the project core directory
-        seldon_delete_manifest = yaml.load(open("deploy_pipeline/seldon_delete_manifest.yaml"))
-
-    delete_previous_step = dsl.ResourceOp(
-        name="deletepreviousseldon",
-        action="delete")
-
-    delete_previous_step.after(predict_step)
 
     try:
         seldon_config = yaml.load(open("../deploy_pipeline/seldon_production_pipeline.yaml"))
@@ -131,7 +143,23 @@ def nlp_pipeline(
         k8s_resource=seldon_config,
         attribute_outputs={"name": "{.metadata.name}"})
 
-    deploy_step.after(delete_previous_step)
+    deploy_step.after(predict_step)
+
+    delete_previous_pvc = dsl.ContainerOp(
+        name='deletepreviouspvc',
+        image='bitnami/kubectl',
+        command="kubectl",
+        arguments=[
+            "delete",
+            "pvc",
+            "-l",
+            "app=nlp,branch={{workflow.parameters.github-branch}}",
+            "--field-selector",
+            "metadata.name!={{workflow.name}}-my-pvc"
+        ]
+    )
+
+    delete_previous_pvc.after(deploy_step)
 
 if __name__ == '__main__':
   import kfp.compiler as compiler
