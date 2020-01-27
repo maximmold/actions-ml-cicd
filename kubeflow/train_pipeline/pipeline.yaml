@@ -117,7 +117,7 @@ spec:
       - 'github-branch={{workflow.parameters.github-branch}} '
       command:
       - kubectl
-      image: salathielgenese/k8s-101
+      image: bitnami/kubectl
   - name: my-pvc
     outputs:
       parameters:
