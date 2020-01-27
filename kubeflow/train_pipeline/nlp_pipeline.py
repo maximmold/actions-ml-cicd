@@ -171,7 +171,8 @@ def nlp_pipeline(
             "app=nlp,branch={{workflow.parameters.github-branch}}",
             "--field-selector",
             "metadata.name!={{workflow.name}}-my-pvc",
-            "--grace-period=0 --force"
+            "--grace-period=0",
+            "--force"
         ]
     )
 
