@@ -42,7 +42,7 @@ def nlp_pipeline(
         requests={"storage": "1Gi"}
     )
     pvc_spec = V1PersistentVolumeClaimSpec(
-        access_modes="ReadWriteOnce",
+        access_modes=["ReadWriteOnce"],
         resources=requested_resources,
         storage_class_name="default"
     )
