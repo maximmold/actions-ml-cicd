@@ -308,7 +308,7 @@ spec:
         valueFrom:
           jsonPath: '{.metadata.name}'
     resource:
-      action: create
+      action: apply
       manifest: "apiVersion: machinelearning.seldon.io/v1alpha2\nkind: SeldonDeployment\n\
         metadata:\n  labels:\n    app: seldon\n    branch: '{{workflow.parameters.github-branch}}'\n\
         \  name: nlp-seldon-deployment\n  namespace: kubeflow\nspec:\n  annotations:\n\
