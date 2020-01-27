@@ -55,7 +55,8 @@ def nlp_pipeline(
 
     vop = dsl.VolumeOp(
       name="create-pvc",
-      k8s_resource=pvc
+      k8s_resource=pvc,
+      modes = None
     )
 
 
