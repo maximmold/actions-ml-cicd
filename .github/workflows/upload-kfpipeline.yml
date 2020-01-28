@@ -38,7 +38,7 @@ jobs:
         GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
         echo filename nlp-$GITHUB_BRANCH.tar.gz
         SHA=${GITHUB_SHA:0:7}
-        POD_NAME=$(kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow)
+        POD_NAME=`./kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow)`
         ./kubectl -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz ${POD_NAME):nlp-$GITHUB_BRANCH.tar.gz
 
         ./kubectl -n kubeflow exec -i ${POD_NAME) -- kfplctl upload nlp-${GITHUB_BRANCH}-pipeline --pipeline nlp-${GITHUB_BRANCH}.tar.gz > plid.txt
