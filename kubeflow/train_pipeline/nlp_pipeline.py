@@ -150,10 +150,8 @@ def nlp_pipeline(
     patch_pvc_finalizer = dsl.ContainerOp(
         name="patchpvcfinalizer",
         image="bitnami/kubectl",
-        command=["for j in $(kubectl get pvc -o name -l app=nlp,branch=master --field-selector metadata.name!=persistentvolumeclaim/nlp--b6f6013-vpimaph-my-pvc -n kubeflow); do kubectl patch $j -p '{\"metadata\":{\"finalizers\": []}}' -n kubeflow --type=merge; done"],
-        # arguments=[
-        #     "kubectl patch `kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow` -n kubeflow -p {'metadata':{'finalizers': []}} --type=merge"
-        # ]
+        command=["bash"],
+        arguments=["-c", 'for j in $(kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow); do kubectl patch $j -p '"'"'{"metadata":{"finalizers": []}}'"'"' -n kubeflow --type=merge; done']
     )
 
     # patch_pvc_finalizer.after(deploy_step)
