@@ -15,10 +15,6 @@ jobs:
       with:
         python-version: '3.x'
         architecture: 'x64'
-    - run: 'echo "$KUBE_CONFIG" > ./.kube_config'
-      shell: bash
-      env:
-        KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
     - name: Compile
       run: |
         pip3 install -r kubeflow/requirements-dev.txt --upgrade
@@ -32,5 +28,5 @@ jobs:
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy
       with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG | base64 }}
+        kubeconfig: ${{ secrets.KUBECONFIG }}
         args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
