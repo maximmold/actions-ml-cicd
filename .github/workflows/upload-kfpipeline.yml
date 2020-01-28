@@ -25,7 +25,7 @@ jobs:
         ls -lsa
         tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
         cat pipeline.yaml
-    - run: echo "##[set-output name=github_branch;]$(`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
+    - run: echo "##[set-output name=github_branch;]$(echo `[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
       id: random_step
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy pipeline
