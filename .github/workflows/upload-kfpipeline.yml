@@ -32,6 +32,7 @@ jobs:
     - name: Download kubectl
       run: |
         curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+        chmod +x kubctl
     - name: Copy upload and start pipeline run
       run: |
         GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
