@@ -52,7 +52,7 @@ spec:
       - 'for j in $(kubectl get pvc -o name -l app=nlp,branch=master --field-selector
         metadata.name!=persistentvolumeclaim/nlp--b6f6013-vpimaph-my-pvc -n kubeflow);
         do kubectl patch $j -p ''{"metadata":{"finalizers": []}}'' -n kubeflow --type=merge;
-        done'
+        done '
       image: bitnami/kubectl
     name: patchpvcfinalizer
     outputs:
