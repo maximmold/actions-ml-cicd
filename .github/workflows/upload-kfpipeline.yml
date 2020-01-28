@@ -25,7 +25,7 @@ jobs:
 #        ls -lsa
 #        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
 #        cat pipeline.yaml
-    - run: 'mkdir ~/.kube; echo "$KUBE_CONFIG" > ~/.kube/.kube_config'
+    - run: 'mkdir ~/.kube; echo "$KUBE_CONFIG" > ~/.kube/config'
       shell: bash
       env:
         KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
