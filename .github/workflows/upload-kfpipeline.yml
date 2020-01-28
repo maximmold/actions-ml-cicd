@@ -65,20 +65,3 @@ jobs:
         rid="$(./kubectl -n kubeflow exec -i ${POD_NAME} -- kfplctl create run nlp-${GITHUB_BRANCH}-train-exp-${SHA} --parameters nlp-params-${GITHUB_BRANCH}.json --pipeline-id ${plid} --experiment-id ${eid})"
         echo run id ${rid}
         ./kubectl -n kubeflow exec -it ${POD_NAME} -- kfplctl get run $rid status
-#    - run: echo "##[set-output name=github_branch;]$(echo `[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
-#      id: random_step
-#    - uses: danielr1996/kubectl-action@1.0.0
-#      name: Copy pipeline
-#      with:
-#        kubeconfig: ${{ secrets.KUBECONFIG }}
-#        args:
-#    - uses: danielr1996/kubectl-action@1.0.0
-#      name: Upload pipeline
-#      with:
-#        kubeconfig: ${{ secrets.KUBECONFIG }}
-#        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
-#    - uses: danielr1996/kubectl-action@1.0.0
-#      name: Upload pipeline
-#      with:
-#        kubeconfig: ${{ secrets.KUBECONFIG }}
-#        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
