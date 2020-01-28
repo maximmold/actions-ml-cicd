@@ -27,10 +27,10 @@ jobs:
     - name: Check
       run: |
         ls -lsa
-        tar -xvzf nlp_pipeline.py.tar.gz
+        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
         cat pipeline.yaml
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy
       with:
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
-        args: -n kubeflow cp nlp_pipeline.py `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
+        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
