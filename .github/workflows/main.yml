@@ -1,6 +1,6 @@
 name: Test Kubectl
 
-on: [push]
+on: []
 
 jobs:
   build:

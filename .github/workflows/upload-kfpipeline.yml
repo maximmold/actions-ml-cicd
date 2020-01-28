@@ -1,0 +1,35 @@
+name: Test Kubectl
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@master
+    - name: Setup python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    - run: 'echo "$KUBE_CONFIG" > ./.kube_config'
+      shell: bash
+      env:
+        KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
+    - name: Compile
+        run: |
+          pip3 install -r requirements.txt --upgrade
+          python3 kubeflow/train_pipeline/nlp_pipeline.py
+    - name: Check
+      run: |
+        ls -lsa
+        tar -xvzf nlp_pipeline.py.tar.gz
+        cat pipeline.yaml
+    - uses: danielr1996/kubectl-action@1.0.0
+      name: Copy
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        args: -n kubeflow cp nlp_pipeline.py `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
