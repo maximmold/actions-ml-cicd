@@ -32,5 +32,5 @@ jobs:
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy
       with:
-        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        kubeconfig: ${{ secrets.KUBE_CONFIG | base64 }}
         args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
