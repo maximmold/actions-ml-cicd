@@ -25,8 +25,13 @@ jobs:
         ls -lsa
         tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
         cat pipeline.yaml
+    - run: echo ::set-output name=random_string::cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1
+      id: random_step
+    - uses: actions/hello-world-javascript-action@master
+        with:
+          who-to-greet: ${{ steps.fruit.outputs.action_fruit }}
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy
       with:
         kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:~
+        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name":${{ steps.random_step.outputs.random_string }}.tar.gz -l app=kfplctl -n kubeflow`:
