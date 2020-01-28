@@ -31,4 +31,4 @@ jobs:
       name: Copy
       with:
         kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name":${{ steps.random_step.outputs.random_string }}.tar.gz -l app=kfplctl -n kubeflow`:
+        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name"`:${{ steps.random_step.outputs.random_string }}.tar.gz -l app=kfplctl -n kubeflow`:
