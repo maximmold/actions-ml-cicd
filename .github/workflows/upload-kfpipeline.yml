@@ -23,7 +23,7 @@ jobs:
       run: |
         pip3 install -r kubeflow/requirements-dev.txt --upgrade
         cd kubeflow/train_pipeline
-        python3 train_pipeline/nlp_pipeline.py
+        python3 nlp_pipeline.py
     - name: Check
       run: |
         ls -lsa
