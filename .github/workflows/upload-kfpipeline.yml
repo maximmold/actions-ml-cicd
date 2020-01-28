@@ -20,9 +20,9 @@ jobs:
       env:
         KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
     - name: Compile
-        run: |
-          pip3 install -r requirements.txt --upgrade
-          python3 kubeflow/train_pipeline/nlp_pipeline.py
+      run: |
+        pip3 install -r kubeflow/requirements-dev.txt --upgrade
+        python3 kubeflow/train_pipeline/nlp_pipeline.py
     - name: Check
       run: |
         ls -lsa
