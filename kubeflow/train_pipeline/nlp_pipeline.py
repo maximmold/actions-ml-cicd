@@ -147,15 +147,6 @@ def nlp_pipeline(
 
     deploy_step.after(predict_step)
 
-    patch_pvc_finalizer = dsl.ContainerOp(
-        name="patchpvcfinalizer",
-        image="bitnami/kubectl",
-        command=["bash"],
-        arguments=["-c", 'for j in $(kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow); do kubectl patch $j -p '"'"'{"metadata":{"finalizers": []}}'"'"' -n kubeflow --type=merge; done']
-    )
-
-    patch_pvc_finalizer.after(deploy_step)
-
     delete_previous_pvc = dsl.ContainerOp(
         name="deletepreviouspvc",
         image="bitnami/kubectl",
@@ -168,11 +159,22 @@ def nlp_pipeline(
             "--field-selector",
             "metadata.name!={{workflow.name}}-my-pvc",
             "--grace-period=0",
-            "--force"
+            "--force",
+            "--wait=false"
         ]
     )
 
-    delete_previous_pvc.after(patch_pvc_finalizer)
+    delete_previous_pvc.after(deploy_step)
+
+    patch_pvc_finalizer = dsl.ContainerOp(
+        name="patchpvcfinalizer",
+        image="bitnami/kubectl",
+        command=["bash"],
+        arguments=["-c", 'for j in $(kubectl get pvc -o name -l app=nlp,branch={{workflow.parameters.github-branch}} --field-selector metadata.name!={{workflow.name}}-my-pvc -n kubeflow); do kubectl patch $j -p '"'"'{"metadata":{"finalizers": []}}'"'"' -n kubeflow --type=merge; done']
+    )
+
+    patch_pvc_finalizer.after(delete_previous_pvc)
+
 
 
 if __name__ == '__main__':

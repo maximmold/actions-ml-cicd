@@ -136,6 +136,7 @@ spec:
       - metadata.name!={{workflow.name}}-my-pvc
       - --grace-period=0
       - --force
+      - --wait=false
       command:
       - kubectl
       image: bitnami/kubectl
@@ -186,11 +187,11 @@ spec:
         name: data-downloader
         template: data-downloader
       - dependencies:
-        - patchpvcfinalizer
+        - seldondeploy
         name: deletepreviouspvc
         template: deletepreviouspvc
       - dependencies:
-        - seldondeploy
+        - deletepreviouspvc
         name: patchpvcfinalizer
         template: patchpvcfinalizer
       - arguments:
