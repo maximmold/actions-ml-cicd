@@ -8,24 +8,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@master
-    - name: Setup python
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.x'
-        architecture: 'x64'
-    - name: Compile
-      run: |
-        pip3 install -r kubeflow/requirements-dev.txt --upgrade
-        cd kubeflow/train_pipeline
-        python3 nlp_pipeline.py
-    - name: Check
-      run: |
-        ls -lsa
-        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
-        cat pipeline.yaml
-    - run: echo "##[set-output name=random_string;]$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)"
+#    - name: Checkout code
+#      uses: actions/checkout@master
+#    - name: Setup python
+#      uses: actions/setup-python@v1
+#      with:
+#        python-version: '3.x'
+#        architecture: 'x64'
+#    - name: Compile
+#      run: |
+#        pip3 install -r kubeflow/requirements-dev.txt --upgrade
+#        cd kubeflow/train_pipeline
+#        python3 nlp_pipeline.py
+#    - name: Check
+#      run: |
+#        ls -lsa
+#        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
+#        cat pipeline.yaml
+    - run: echo "##[set-output name=random_string;]$(cat blah)"
       id: random_step
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy
