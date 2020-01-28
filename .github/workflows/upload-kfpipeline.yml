@@ -25,15 +25,15 @@ jobs:
         ls -lsa
         tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
         cat pipeline.yaml
-    - run: echo "##[set-output name=random_string;]$(date +%s | sha256sum | base64 | head -c 32 ; echo)"
+    - run: echo "##[set-output name=github_branch;]$(`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
       id: random_step
     - uses: danielr1996/kubectl-action@1.0.0
       name: Copy pipeline
       with:
         kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:${{ steps.random_step.outputs.random_string }}.tar.gz
+        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
     - uses: danielr1996/kubectl-action@1.0.0
       name: Upload pipeline
       with:
         kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload ${{ steps.random_step.outputs.random_string }} --pipeline ${{ steps.random_step.outputs.random_string }}.tar.gz
+        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
