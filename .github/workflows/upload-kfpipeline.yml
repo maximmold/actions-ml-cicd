@@ -37,14 +37,14 @@ jobs:
       run: |
         GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
         echo filename nlp-$GITHUB_BRANCH.tar.gz
-        SHA=${GITHUB_SHA:0:7}
+        SHA=${GITHUB_SHA}
         POD_NAME=$(./kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow)
         echo [{\"name\": \"github-branch\",\"value\": \"${GITHUB_BRANCH}\"}] > nlp-params-${GITHUB_BRANCH}.json
 
         ./kubectl -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz ${POD_NAME}:nlp-$GITHUB_BRANCH.tar.gz
         ./kubectl -n kubeflow cp nlp-params-${GITHUB_BRANCH}.json ${POD_NAME}:nlp-params-${GITHUB_BRANCH}.json
 
-        ./kubectl -n kubeflow exec -i ${POD_NAME} -- kfplctl upload nlp-${GITHUB_BRANCH}-pipeline --pipeline nlp-${GITHUB_BRANCH}.tar.gz > plid.txt
+        ./kubectl -n kubeflow exec -i ${POD_NAME} -- kfplctl upload nlp-${GITHUB_BRANCH}-pipeline-${SHA} --pipeline nlp-${GITHUB_BRANCH}.tar.gz > plid.txt
         plid=$(cat plid.txt)
         echo "Pipeline ID:"
         echo $plid
