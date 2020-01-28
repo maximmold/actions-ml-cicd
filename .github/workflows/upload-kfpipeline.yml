@@ -58,7 +58,7 @@ jobs:
           echo "Experiment ID:"
           echo $eid
         else
-          echo $eid
+          echo existing experiment $eid
         fi
         # create new run
         echo "Creating new run"
