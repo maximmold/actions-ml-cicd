@@ -41,7 +41,7 @@ jobs:
 
         ./kubectl -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:nlp-$GITHUB_BRANCH.tar.gz
 
-        ./kubectl -n kubeflow exec -i `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${GITHUB_BRANCH}-pipeline nlp-${GITHUB_BRANCH}.tar.gz > plid.txt
+        ./kubectl -n kubeflow exec -i `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${GITHUB_BRANCH}-pipeline --pipeline nlp-${GITHUB_BRANCH}.tar.gz > plid.txt
         plid=$(cat plid.txt)
         echo "Pipeline ID:"
         echo $plid
