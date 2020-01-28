@@ -8,32 +8,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@master
-    - name: Setup python
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.x'
-        architecture: 'x64'
-    - name: Compile
+#    - name: Checkout code
+#      uses: actions/checkout@master
+#    - name: Setup python
+#      uses: actions/setup-python@v1
+#      with:
+#        python-version: '3.x'
+#        architecture: 'x64'
+#    - name: Compile
+#      run: |
+#        pip3 install -r kubeflow/requirements-dev.txt --upgrade
+#        cd kubeflow/train_pipeline
+#        python3 nlp_pipeline.py
+#    - name: Check
+#      run: |
+#        ls -lsa
+#        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
+#        cat pipeline.yaml
+    - run: 'mkdir ~/.kube; echo "$KUBE_CONFIG" > ~/.kube/.kube_config'
+      shell: bash
+      env:
+        KUBE_CONFIG: ${{secrets.KUBE_CONFIG}}
+    - name: Download kubectl
       run: |
-        pip3 install -r kubeflow/requirements-dev.txt --upgrade
-        cd kubeflow/train_pipeline
-        python3 nlp_pipeline.py
-    - name: Check
-      run: |
-        ls -lsa
-        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
-        cat pipeline.yaml
-    - run: echo "##[set-output name=github_branch;]$(echo `[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
-      id: random_step
-    - uses: danielr1996/kubectl-action@1.0.0
-      name: Copy pipeline
-      with:
-        kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
-    - uses: danielr1996/kubectl-action@1.0.0
-      name: Upload pipeline
-      with:
-        kubeconfig: ${{ secrets.KUBECONFIG }}
-        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
+        curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
+    - name: Copy upload and start pipeline run
+        run: |
+          GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
+          ./kubectl -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:nlp-$GITHUB_BRANCH.tar.gz
+#    - run: echo "##[set-output name=github_branch;]$(echo `[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
+#      id: random_step
+#    - uses: danielr1996/kubectl-action@1.0.0
+#      name: Copy pipeline
+#      with:
+#        kubeconfig: ${{ secrets.KUBECONFIG }}
+#        args:
+#    - uses: danielr1996/kubectl-action@1.0.0
+#      name: Upload pipeline
+#      with:
+#        kubeconfig: ${{ secrets.KUBECONFIG }}
+#        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
+#    - uses: danielr1996/kubectl-action@1.0.0
+#      name: Upload pipeline
+#      with:
+#        kubeconfig: ${{ secrets.KUBECONFIG }}
+#        args: -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-${{ steps.random_step.outputs.github_branch }}--pipeline nlp-${{ steps.random_step.outputs.github_branch }}.tar.gz
