@@ -38,7 +38,9 @@ jobs:
         GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
         echo filename nlp-$GITHUB_BRANCH.tar.gz
         SHA=${GITHUB_SHA:0:7}
-        plid=$(./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-$GITHUB_BRANCH-pipeline nlp-$GITHUB_BRANCH.tar.gz)
+        ./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-$GITHUB_BRANCH-pipeline nlp-$GITHUB_BRANCH.tar.gz > plid.txt
+        cat plid.txt
+        plid=$(cat plid.txt)
         echo "Pipeline ID:"
         echo $plid
         # use or create experiment
