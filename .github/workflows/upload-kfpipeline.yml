@@ -8,23 +8,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-#    - name: Checkout code
-#      uses: actions/checkout@master
-#    - name: Setup python
-#      uses: actions/setup-python@v1
-#      with:
-#        python-version: '3.x'
-#        architecture: 'x64'
-#    - name: Compile
-#      run: |
-#        pip3 install -r kubeflow/requirements-dev.txt --upgrade
-#        cd kubeflow/train_pipeline
-#        python3 nlp_pipeline.py
-#    - name: Check
-#      run: |
-#        ls -lsa
-#        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
-#        cat pipeline.yaml
+    - name: Checkout code
+      uses: actions/checkout@master
+    - name: Setup python
+      uses: actions/setup-python@v1
+      with:
+        python-version: '3.x'
+        architecture: 'x64'
+    - name: Compile
+      run: |
+        pip3 install -r kubeflow/requirements-dev.txt --upgrade
+        cd kubeflow/train_pipeline
+        python3 nlp_pipeline.py
+    - name: Check
+      run: |
+        ls -lsa
+        tar -xvzf kubeflow/train_pipeline/nlp_pipeline.py.tar.gz
+        cat pipeline.yaml
     - run: 'mkdir ~/.kube; echo "$KUBE_CONFIG" > ~/.kube/config'
       shell: bash
       env:
@@ -37,8 +37,29 @@ jobs:
       run: |
         GITHUB_BRANCH=`[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`
         echo filename nlp-$GITHUB_BRANCH.tar.gz
+        SHA=${GITHUB_SHA:0:7}
         kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow
         ./kubectl -n kubeflow cp kubeflow/train_pipeline/nlp_pipeline.py.tar.gz `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow`:nlp-$GITHUB_BRANCH.tar.gz
+        plid="$(./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl upload nlp-$GITHUB_BRANCH-pipeline nlp-$GITHUB_BRANCH.tar.gz)"
+        echo "Pipeline ID:"
+        echo $plid
+        # use or create experiment
+        echo "Check if experiment is already in place"
+        eid="$(./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` --  kfplctl get experiment --name nlp-$GITHUB_BRANCH-train-exp)"
+        if [ -z "$eid" ]
+        then
+          echo "Creating new experiment"
+          eid="$(./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` --  kfplctl create experiment nlp-$GITHUB_BRANCH-train-exp)"
+          echo "Experiment ID:"
+          echo $eid
+        else
+          echo $eid
+        fi
+        # create new run
+        echo "Creating new run"
+        rid="$(./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl create run nlp-${GITHUB_BRANCH}-train-exp-${SHA} --parameters mnistParams.json --pipeline-id ${plid} --experiment-id ${eid})"
+        echo ${rid}
+        ./kubectl -n kubeflow exec -it `kubectl get po --no-headers -o custom-columns=":metadata.name" -l app=kfplctl -n kubeflow` -- kfplctl get run $rid status
 #    - run: echo "##[set-output name=github_branch;]$(echo `[[ ! -z "$GITHUB_HEAD_REF" ]] && echo $GITHUB_HEAD_REF || echo  ${GITHUB_REF#refs/heads/}`)"
 #      id: random_step
 #    - uses: danielr1996/kubectl-action@1.0.0
