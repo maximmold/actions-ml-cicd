@@ -1,6 +1,7 @@
 import click
 import numpy as np
 import dill
+import logging
 from sklearn.linear_model import LogisticRegression
 
 @click.command()
@@ -40,6 +41,8 @@ def run_pipeline(
             lr_model = dill.load(model_f)
 
     y = lr_model.predict_proba(x)
+
+    logging.warning(y)
 
     with open(out_path, "wb") as out_f:
         dill.dump(y, out_f)
