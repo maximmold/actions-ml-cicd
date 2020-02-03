@@ -1,3 +1,14 @@
+## Notes
+This was cloned from https://github.com/machine-learning-apps/actions-ml-cicd, but largely diverged
+from it to not use Argo and chat ops. Instead, it just used kubeflow pipelines and actions on push of the repo.
+
+It follows the multibranch pipeline mentality that creates a deployment per branch. When a new deployment
+occurs, the seldonDeployment CRD is updated with potentially new container images references and a new
+pvc with the model. The pvc from the old deployment is deleted.
+
+The issue with this approach is that changes that don't involve any ML ops activites like updating this
+readme would still result in cycling the deployment because of the resulting new files in a new PVC.
+
 # A Collection of GitHub Actions That Facilitate MLOps
 
 Materials that accompany the talk [MLOps with GitHub Actions & Kubernetes](https://youtu.be/Ll50l3fsoYs)
