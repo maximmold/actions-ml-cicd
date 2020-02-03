@@ -5,13 +5,13 @@ metadata:
   labels:
     app: seldon
     branch: "{{workflow.parameters.github-branch}}"
-  name: "nlp-seldon-deployment"
+  name: "nlp-seldon-deployment-{{workflow.parameters.github-branch}}"
   namespace: kubeflow
 spec:
   annotations:
     project_name: NLP Pipeline
     deployment_version: v1
-  name: "nlp-seldon-deployment"
+  name: "nlp-seldon-deployment-{{workflow.parameters.github-branch}}"
   oauth_key: oauth-key
   oauth_secret: oauth-secret
   predictors:
