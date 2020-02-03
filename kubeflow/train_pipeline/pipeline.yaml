@@ -86,7 +86,7 @@ spec:
       manifest: "apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  labels:\n\
         \    app: nlp\n    branch: '{{workflow.parameters.github-branch}}'\n  name:\
         \ '{{workflow.name}}-my-pvc'\nspec:\n  accessModes:\n  - ReadWriteOnce\n \
-        \ resources:\n    requests:\n      storage: 1Gi\n  storageClassName: default\n"
+        \ resources:\n    requests:\n      storage: 1Gi\n"
   - container:
       args:
       - /microservice/pipeline_step.py

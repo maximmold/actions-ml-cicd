@@ -43,8 +43,7 @@ def nlp_pipeline(
     )
     pvc_spec = V1PersistentVolumeClaimSpec(
         access_modes=["ReadWriteOnce"],
-        resources=requested_resources,
-        storage_class_name="default"
+        resources=requested_resources
     )
     pvc = V1PersistentVolumeClaim(
         api_version="v1",
