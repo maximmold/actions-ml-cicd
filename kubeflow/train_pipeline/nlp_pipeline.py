@@ -13,7 +13,7 @@ from kubernetes.client.models import (
   description='A pipeline demonstrating reproducible steps for NLP'
 )
 def nlp_pipeline(
-        csv_url="https://raw.githubusercontent.com/maximmold/actions-ml-cicd/master/data/reddit_train.csv",
+        csv_url="https://raw.githubusercontent.com/maximmold/actions-ml-cicd/{{workflow.parameters.github-branch}}/data/reddit_train.csv",
         csv_encoding="ISO-8859-1",
         features_column="BODY",
         labels_column="REMOVED",
