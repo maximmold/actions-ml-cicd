@@ -3,11 +3,23 @@ This was cloned from https://github.com/machine-learning-apps/actions-ml-cicd, b
 from it to not use Argo and chat ops. Instead, it just used kubeflow pipelines and actions on push of the repo.
 
 It follows the multibranch pipeline mentality that creates a deployment per branch. When a new deployment
-occurs, the seldonDeployment CRD is updated with potentially new container images references and a new
+occurs, the SeldonDeployment CRD is updated with potentially new container images references and a new
 pvc with the model. The pvc from the old deployment is deleted.
 
-The issue with this approach is that changes that don't involve any ML ops activites like updating this
+The issue with this approach is that changes that don't involve any ML ops activities like updating this
 readme would still result in cycling the deployment because of the resulting new files in a new PVC.
+
+To make the github action work, you have to setup a GitHub secret called `KUBE_CONFIG` with the value copied
+from the kubeconfig file created from the ansible playbook.
+
+On Mac, you can copy this to the clipboard like so:
+```
+cat /path/to/disrupt-ml-ops/tmp/kubeflow/kubeconfig|pbcopy
+```
+
+And then you can go to https://github.com/maximmold/actions-ml-cicd/settings/secrets/new to add it.
+
+Note that a public github was used until enterprise github supports GitHub Actions.
 
 # A Collection of GitHub Actions That Facilitate MLOps
 
