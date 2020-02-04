@@ -10,7 +10,7 @@ The issue with this approach is that changes that don't involve any ML ops activ
 readme would still result in cycling the deployment because of the resulting new files in a new PVC.
 
 To make the github action work, you have to setup a GitHub secret called `KUBE_CONFIG` with the value copied
-from the kubeconfig file created from the ansible playbook.
+from the kubeconfig file created from the ansible playbook. 
 
 On Mac, you can copy this to the clipboard like so:
 ```
