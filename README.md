@@ -21,7 +21,7 @@ And then you can go to https://github.com/maximmold/actions-ml-cicd/settings/sec
 
 Note that a public github was used until enterprise github supports GitHub Actions.
 
-Touch
+Touch 2
 
 # A Collection of GitHub Actions That Facilitate MLOps
 
