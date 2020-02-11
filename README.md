@@ -27,7 +27,6 @@ This repository also requires GIT LFS to be installed. On Mac, you can run:
 brew install git-lfs
 ```
 
-Touch
 
 # A Collection of GitHub Actions That Facilitate MLOps
 
