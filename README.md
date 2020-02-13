@@ -23,6 +23,7 @@ Note that a public github was used until enterprise github supports GitHub Actio
 
 This repository also requires GIT LFS to be installed. On Mac, you can run:
 
+Touch
 ```
 brew install git-lfs
 ```
