@@ -10,15 +10,20 @@ import pandas as pd
 @click.option('--csv-encoding', default="ISO-8859-1")
 @click.option('--features-column', default="BODY")
 @click.option('--labels-column', default="REMOVED")
+@click.option('--csv-path')
 def run_pipeline(
         labels_path, 
         features_path,
         csv_url, 
         csv_encoding,
         features_column,
-        labels_column):
+        labels_column,
+        csv_path):
 
-    df = pd.read_csv(csv_url, encoding=csv_encoding)
+    if csv_path:
+        df = pd.read_csv(csv_path, encoding=csv_encoding)
+    else:
+        df = pd.read_csv(csv_url, encoding=csv_encoding)
 
     x = df[features_column].values
 

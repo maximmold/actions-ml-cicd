@@ -21,6 +21,14 @@ And then you can go to https://github.com/maximmold/actions-ml-cicd/settings/sec
 
 Note that a public github was used until enterprise github supports GitHub Actions.
 
+This repository also requires GIT LFS to be installed. On Mac, you can run:
+
+Touch
+```
+brew install git-lfs
+```
+
+
 # A Collection of GitHub Actions That Facilitate MLOps
 
 Materials that accompany the talk [MLOps with GitHub Actions & Kubernetes](https://youtu.be/Ll50l3fsoYs)
