@@ -1,4 +1,5 @@
 ## Notes
+Touch to start pipeline
 This was cloned from https://github.com/machine-learning-apps/actions-ml-cicd, but largely diverged
 from it to not use Argo and chat ops. Instead, it just used kubeflow pipelines and actions on push of the repo.
 
